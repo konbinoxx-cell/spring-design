@@ -4,6 +4,8 @@ A comprehensive web-based tool for designing and calculating compression springs
 
 一个功能完整的网页版压缩弹簧设计计算工具，包含技术图纸和实时验证功能。
 
+⭐ **Star this repo if you find it useful!** | **如果觉得有用请给个星标！**
+
 ---
 
 ## 🌟 Features | 功能特点
@@ -68,8 +70,9 @@ The tool calculates the following parameters:
 
 1. **Download the HTML file**
    - Choose your preferred language version:
-     - `compression-spring-designer-en.html` (English)
-     - `compression-spring-designer-zh.html` (Chinese)
+     - `en/compression-spring-designer.html` (English)
+     - `cn/compression-spring-designer.html` (Chinese)
+   - Or simply open `index.html` to select your language
 
 2. **Open in browser**
    - Simply double-click the HTML file
@@ -98,8 +101,9 @@ The tool calculates the following parameters:
 
 1. **下载 HTML 文件**
    - 选择您偏好的语言版本：
-     - `compression-spring-designer-en.html`（英文）
-     - `compression-spring-designer-zh.html`（中文）
+     - `en/compression-spring-designer.html`（英文）
+     - `cn/compression-spring-designer.html`（中文）
+   - 或直接打开 `index.html` 选择语言
 
 2. **在浏览器中打开**
    - 直接双击 HTML 文件
@@ -252,10 +256,31 @@ K = (4C - 1) / (4C - 4) + 0.615 / C
 
 ```
 compression-spring-designer/
-├── compression-spring-designer-en.html    # English version
-├── compression-spring-designer-zh.html    # Chinese version
-└── README.md                               # This file
+├── index.html                                 # Language selection page
+├── en/
+│   └── compression-spring-designer.html       # English version
+├── cn/
+│   └── compression-spring-designer.html       # Chinese version
+└── README.md                                  # This file
 ```
+
+---
+
+## 🌟 Support This Project | 支持项目
+
+### English
+If you find this tool helpful, please consider:
+- ⭐ Star this repository
+- 🍴 Fork it for your own projects
+- 🐛 Report issues
+- 💡 Submit pull requests
+
+### 中文
+如果这个工具对您有帮助，欢迎：
+- ⭐ 给项目加星标
+- 🍴 Fork 项目进行二次开发
+- 🐛 提交 Issue 报告问题
+- 💡 提交 Pull Request 贡献代码
 
 ---
 
@@ -332,4 +357,4 @@ For questions, suggestions, or issues, please open an issue in the repository.
 
 ---
 
-**Made with ❤️ for Engineers | 为工程师用心打造 ❤️**# spring-design  
+**Made with ❤️ for Engineers | 为工程师用心打造 ❤️**
