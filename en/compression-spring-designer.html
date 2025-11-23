@@ -1,22 +1,33 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>弹簧设计分析系统</title>
+    <title>Spring Design Calculator</title>
     <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #c0392b;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            font-family: 'Microsoft YaHei', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
-            line-height: 1.6;
+            color: #333;
         }
         
         .container {
@@ -28,143 +39,125 @@
             overflow: hidden;
         }
         
-        .header {
-            background: #2c3e50;
+        header {
+            background: var(--primary);
             color: white;
             padding: 30px;
             text-align: center;
         }
         
-        .header h1 {
-            font-size: 28px;
+        header h1 {
+            font-size: 2.2rem;
             margin-bottom: 10px;
         }
         
-        .control-panel {
-            background: #34495e;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
         }
         
-        .control-group {
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+        
+        .input-section {
+            background: var(--light);
+            padding: 30px;
+            border-right: 2px dashed #bdc3c7;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-group h3 {
+            color: var(--dark);
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-control {
+            flex: 1;
             display: flex;
             flex-direction: column;
         }
         
-        .control-group label {
-            color: white;
+        .form-control label {
+            font-weight: 600;
             margin-bottom: 5px;
-            font-size: 14px;
+            color: var(--dark);
+            font-size: 0.95rem;
         }
         
-        .control-group input, .control-group select {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            font-size: 14px;
+        .form-control input, .form-control select {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
         
-        .calculate-btn-container {
-            grid-column: 1 / -1;
-            text-align: center;
-            margin-top: 10px;
+        .form-control input:focus, .form-control select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
         }
         
-        .btn-calculate {
-            background: #e74c3c;
+        .calculate-btn {
+            background: var(--accent);
             color: white;
             border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
             box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
         }
         
-        .btn-calculate:hover {
+        .calculate-btn:hover {
             background: #c0392b;
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
         }
         
-        .btn-calculate:active {
+        .calculate-btn:active {
             transform: translateY(0);
         }
         
-        .btn-calculate:disabled {
-            background: #95a5a6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
-            min-height: 600px;
-        }
-        
-        .drawing-section {
-            background: #f8f9fa;
-            padding: 30px;
-            border-right: 2px dashed #dee2e6;
-            position: relative;
-        }
-        
-        .spring-canvas {
-            width: 100%;
-            height: 400px;
-            background: white;
-            border: 2px solid #34495e;
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .spring-coil {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 200px;
-            height: 300px;
-        }
-        
-        .coil {
-            position: absolute;
-            width: 200px;
-            height: 10px;
-            background: #3498db;
-            border-radius: 5px;
-            left: 0;
-            transition: all 0.5s ease;
-        }
-        
-        .parameters-section {
+        .result-section {
             padding: 30px;
             display: flex;
             flex-direction: column;
             gap: 25px;
         }
         
-        .parameter-group {
+        .result-card {
             background: white;
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         }
         
-        .parameter-group h3 {
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
+        .result-card h3 {
+            color: var(--dark);
+            border-bottom: 2px solid var(--secondary);
             padding-bottom: 8px;
             margin-bottom: 15px;
-            font-size: 18px;
+            font-size: 1.3rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -180,9 +173,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
+            padding: 12px;
             background: #f8f9fa;
-            border-radius: 5px;
+            border-radius: 8px;
             transition: all 0.3s ease;
         }
         
@@ -192,40 +185,39 @@
         }
         
         .parameter-label {
-            font-weight: bold;
-            color: #34495e;
-            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
         }
         
         .parameter-value {
-            color: #2c3e50;
-            font-weight: 600;
-            font-size: 16px;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.05rem;
         }
         
-        .key-parameters {
+        .key-results {
             background: linear-gradient(135deg, #e8f4fd 0%, #d1ecf1 100%);
-            border: 2px solid #3498db;
+            border: 2px solid var(--secondary);
         }
         
         .design-status {
             text-align: center;
             padding: 25px;
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            background: linear-gradient(135deg, var(--success) 0%, #2ecc71 100%);
             color: white;
-            font-size: 20px;
+            font-size: 1.3rem;
             font-weight: bold;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
-            transition: all 0.5s ease;
         }
         
         .design-status.warning {
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            background: linear-gradient(135deg, var(--warning) 0%, #e67e22 100%);
         }
         
         .design-status.error {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            background: linear-gradient(135deg, var(--danger) 0%, #c0392b 100%);
         }
         
         .warning-panel {
@@ -255,7 +247,7 @@
             padding: 12px 24px;
             border: none;
             border-radius: 5px;
-            font-size: 14px;
+            font-size: 0.95rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -263,7 +255,7 @@
         }
         
         .btn-primary {
-            background: #3498db;
+            background: var(--secondary);
             color: white;
         }
         
@@ -274,7 +266,7 @@
         
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         .status-indicator {
@@ -282,142 +274,242 @@
             align-items: center;
             gap: 8px;
             padding: 5px 12px;
-            background: #27ae60;
+            background: var(--success);
             color: white;
             border-radius: 20px;
-            font-size: 12px;
-        }
-        
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
+            font-size: 0.85rem;
         }
         
         .calculation-progress {
             text-align: center;
             padding: 10px;
-            background: #3498db;
+            background: var(--secondary);
             color: white;
             border-radius: 5px;
             margin-top: 10px;
             display: none;
         }
+        
+        .spring-preview {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .spring-graphic {
+            display: inline-block;
+            width: 200px;
+            height: 300px;
+            background: linear-gradient(180deg, var(--secondary) 0%, #2980b9 100%);
+            border-radius: 100px;
+            position: relative;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-section {
+                border-right: none;
+                border-bottom: 2px dashed #bdc3c7;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>弹簧设计分析系统</h1>
-            <p>专业弹簧设计与验证平台</p>
-        </div>
+        <header>
+            <h1>Spring Design Calculator</h1>
+            <p>Professional Spring Design and Analysis Tool</p>
+        </header>
         
-        <div class="control-panel">
-            <div class="control-group">
-                <label>材料类型</label>
-                <select id="materialType">
-                    <option value="carbon">碳素弹簧钢丝</option>
-                    <option value="stainless">不锈钢丝</option>
-                    <option value="music">琴钢丝</option>
-                    <option value="bronze">磷青铜丝</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label>钢丝直径 (mm)</label>
-                <input type="number" id="wireDiameter" value="3.0" step="0.1" min="0.1">
-            </div>
-            <div class="control-group">
-                <label>弹簧中径 (mm)</label>
-                <input type="number" id="meanDiameter" value="27.0" step="0.1" min="1">
-            </div>
-            <div class="control-group">
-                <label>自由长度 (mm)</label>
-                <input type="number" id="freeLength" value="80.0" step="0.1" min="1">
-            </div>
-            <div class="control-group">
-                <label>总圈数</label>
-                <input type="number" id="totalCoils" value="12.1" step="0.1" min="1">
-            </div>
-            <div class="calculate-btn-container">
-                <button class="btn-calculate" id="calculateBtn">
-                    🚀 生成计算报告
-                </button>
-                <div class="calculation-progress" id="progressIndicator">
-                    正在计算中，请稍候...
-                </div>
-            </div>
-        </div>
-        
-        <div class="content">
-            <div class="drawing-section">
-                <h3>弹簧技术图纸 <span class="status-indicator" id="drawingStatus">等待计算</span></h3>
-                <div class="spring-canvas" id="springCanvas">
-                    <div class="spring-coil" id="springCoil">
-                        <!-- 线圈将通过JavaScript动态创建 -->
-                    </div>
-                </div>
-                <div class="action-buttons">
-                    <button class="btn btn-primary" id="exportBtn" disabled>导出图纸 (DWG)</button>
-                    <button class="btn btn-secondary" id="printBtn" disabled>打印报告</button>
-                </div>
-            </div>
-            
-            <div class="parameters-section">
-                <div class="parameter-group">
-                    <h3>基本设计参数</h3>
-                    <div class="parameter-grid" id="basicParams">
-                        <!-- 基本参数将通过JavaScript动态填充 -->
+        <div class="app-container">
+            <section class="input-section">
+                <div class="input-group">
+                    <h3>Material Properties</h3>
+                    <div class="form-row">
+                        <div class="form-control">
+                            <label for="materialType">Spring Material</label>
+                            <select id="materialType">
+                                <option value="musicWire">Music Wire (G=79,000 MPa, τ=600 MPa)</option>
+                                <option value="hardDrawn">Hard-Drawn Steel (G=79,000 MPa, τ=500 MPa)</option>
+                                <option value="stainlessSteel">Stainless Steel (G=69,000 MPa, τ=450 MPa)</option>
+                                <option value="phosphorBronze">Phosphor Bronze (G=41,000 MPa, τ=320 MPa)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="parameter-group key-parameters">
-                    <h3>性能分析结果</h3>
+                <div class="input-group">
+                    <h3>Spring Geometry</h3>
+                    <div class="form-row">
+                        <div class="form-control">
+                            <label for="wireDiameter">Wire Diameter (d) [mm]</label>
+                            <input type="number" id="wireDiameter" value="3.0" step="0.1" min="0.1">
+                        </div>
+                        <div class="form-control">
+                            <label for="meanDiameter">Mean Diameter (D) [mm]</label>
+                            <input type="number" id="meanDiameter" value="27.0" step="0.1" min="1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-control">
+                            <label for="freeLength">Free Length (H₀) [mm]</label>
+                            <input type="number" id="freeLength" value="80.0" step="0.1" min="1">
+                        </div>
+                        <div class="form-control">
+                            <label for="activeCoils">Active Coils (n)</label>
+                            <input type="number" id="activeCoils" value="10.5" step="0.1" min="1">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <h3>Load Conditions</h3>
+                    <div class="form-row">
+                        <div class="form-control">
+                            <label for="workingLoad">Working Load (F) [N]</label>
+                            <input type="number" id="workingLoad" value="100" step="1" min="1">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="spring-preview">
+                    <div class="spring-graphic"></div>
+                </div>
+                
+                <button class="calculate-btn" id="calculateBtn">
+                    Calculate Spring Parameters
+                </button>
+                <div class="calculation-progress" id="progressIndicator">
+                    Calculating, please wait...
+                </div>
+            </section>
+            
+            <section class="result-section">
+                <div class="result-card">
+                    <h3>Basic Parameters</h3>
+                    <div class="parameter-grid" id="basicParams">
+                        <div class="parameter-item">
+                            <span class="parameter-label">Material Type:</span>
+                            <span class="parameter-value">Music Wire</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Wire Diameter (d):</span>
+                            <span class="parameter-value">3.0 mm</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Mean Diameter (D):</span>
+                            <span class="parameter-value">27.0 mm</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Free Length (H₀):</span>
+                            <span class="parameter-value">80.0 mm</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Active Coils (n):</span>
+                            <span class="parameter-value">10.5</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Spring Index (C):</span>
+                            <span class="parameter-value">9.00</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Pitch (t):</span>
+                            <span class="parameter-value">7.33 mm</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Total Coils:</span>
+                            <span class="parameter-value">12.1</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-card key-results">
+                    <h3>Performance Results</h3>
                     <div class="parameter-grid" id="performanceParams">
-                        <!-- 性能参数将通过JavaScript动态填充 -->
+                        <div class="parameter-item">
+                            <span class="parameter-label">Spring Rate (k):</span>
+                            <span class="parameter-value">4.00 N/mm</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Shear Stress (τ):</span>
+                            <span class="parameter-value">295.9 MPa</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Safety Factor (S.F.):</span>
+                            <span class="parameter-value" style="color: var(--success);">2.70</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Solid Height:</span>
+                            <span class="parameter-value">36.29 mm</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Deflection:</span>
+                            <span class="parameter-value">25.0 mm</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Resonant Frequency:</span>
+                            <span class="parameter-value">45.2 Hz</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Weight:</span>
+                            <span class="parameter-value">28.5 g</span>
+                        </div>
+                        <div class="parameter-item">
+                            <span class="parameter-label">Cost Estimate:</span>
+                            <span class="parameter-value">$3.20</span>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="design-status" id="designStatus">
-                    ⏳ 等待计算...
+                    ⏳ Awaiting Calculation...
                 </div>
                 
                 <div class="warning-panel" id="warningPanel" style="display: none;">
                     <div class="warning-header">
-                        ⚠️ 稳定性建议
+                        ⚠️ Design Recommendations
                     </div>
-                    <p id="warningText"></p>
+                    <p id="warningText">Due to the high slenderness ratio (H₀/D = 2.96), the spring requires guidance during operation to ensure stability. We recommend installing guide rods or guide sleeves.</p>
                     <div class="action-buttons">
-                        <button class="btn btn-primary" id="optimizeBtn">优化设计</button>
-                        <button class="btn btn-secondary" id="detailBtn">查看详细分析</button>
+                        <button class="btn btn-primary" id="optimizeBtn">Optimize Design</button>
+                        <button class="btn btn-secondary" id="detailBtn">View Detailed Analysis</button>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     </div>
 
     <script>
-        // 材料属性数据库
+        // Material properties database
         const materialProperties = {
-            carbon: { 
-                name: "碳素弹簧钢丝",
-                G: 79000, // 剪切模量 MPa
-                density: 7.85, // g/cm³
-                cost: 0.8 // 元/克
+            musicWire: { 
+                name: "Music Wire",
+                G: 79000, // Shear modulus [MPa]
+                tau_allow: 600, // Allowable shear stress [MPa]
+                density: 7.85, // Density [g/cm³]
+                cost: 1.2 // Cost factor [USD/g]
             },
-            stainless: { 
-                name: "不锈钢丝",
-                G: 69000,
-                density: 7.93,
-                cost: 1.2
-            },
-            music: { 
-                name: "琴钢丝",
+            hardDrawn: { 
+                name: "Hard-Drawn Steel",
                 G: 79000,
+                tau_allow: 500,
                 density: 7.85,
+                cost: 0.9
+            },
+            stainlessSteel: { 
+                name: "Stainless Steel",
+                G: 69000,
+                tau_allow: 450,
+                density: 7.93,
                 cost: 1.5
             },
-            bronze: { 
-                name: "磷青铜丝",
+            phosphorBronze: { 
+                name: "Phosphor Bronze",
                 G: 41000,
+                tau_allow: 320,
                 density: 8.8,
                 cost: 3.0
             }
@@ -425,199 +517,186 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const calculateBtn = document.getElementById('calculateBtn');
-            const progressIndicator = document.getElementById('progressIndicator');
-            
             calculateBtn.addEventListener('click', calculateSpring);
             
-            // 初始渲染
-            updateSpringDrawing();
+            // Initialize with default values
+            updateDisplay(getDefaultValues());
         });
+
+        function getDefaultValues() {
+            return {
+                material: "Music Wire",
+                wireDiameter: 3.0,
+                meanDiameter: 27.0,
+                freeLength: 80.0,
+                activeCoils: 10.5,
+                totalCoils: 12.1,
+                springIndex: 9.00,
+                pitch: 7.33,
+                springRate: 4.00,
+                shearStress: 295.9,
+                safetyFactor: 2.70,
+                solidHeight: 36.29,
+                deflection: 25.0,
+                resonantFrequency: 45.2,
+                weight: 28.5,
+                cost: 3.20
+            };
+        }
 
         function calculateSpring() {
             const calculateBtn = document.getElementById('calculateBtn');
             const progressIndicator = document.getElementById('progressIndicator');
             
-            // 显示加载状态
+            // Show loading state
             calculateBtn.disabled = true;
-            calculateBtn.textContent = '计算中...';
+            calculateBtn.textContent = 'Calculating...';
             progressIndicator.style.display = 'block';
-            document.body.classList.add('loading');
             
-            // 模拟计算过程
-            setTimeout(() => {
-                performCalculation();
-                
-                // 恢复按钮状态
-                calculateBtn.disabled = false;
-                calculateBtn.textContent = '🚀 生成计算报告';
-                progressIndicator.style.display = 'none';
-                document.body.classList.remove('loading');
-                
-                // 启用导出和打印按钮
-                document.getElementById('exportBtn').disabled = false;
-                document.getElementById('printBtn').disabled = false;
-            }, 1500);
-        }
-
-        function performCalculation() {
-            // 获取输入值
+            // Get input values
             const materialType = document.getElementById('materialType').value;
             const wireDiameter = parseFloat(document.getElementById('wireDiameter').value);
             const meanDiameter = parseFloat(document.getElementById('meanDiameter').value);
             const freeLength = parseFloat(document.getElementById('freeLength').value);
-            const totalCoils = parseFloat(document.getElementById('totalCoils').value);
+            const activeCoils = parseFloat(document.getElementById('activeCoils').value);
+            const workingLoad = parseFloat(document.getElementById('workingLoad').value);
             
             const material = materialProperties[materialType];
             
-            // 核心计算逻辑
-            const activeCoils = totalCoils - 2; // 假设端部各并紧1圈
-            const springIndex = meanDiameter / wireDiameter; // 旋绕比
-            const pitch = freeLength / (totalCoils - 1); // 节距
-            
-            // 弹簧刚度计算
-            const stiffness = (material.G * Math.pow(wireDiameter, 4)) / 
-                            (8 * Math.pow(meanDiameter, 3) * activeCoils);
-            
-            // 应力计算
-            const Kw = (4 * springIndex - 1) / (4 * springIndex - 4) + 0.615 / springIndex;
-            const maxLoad = 100; // 假设最大载荷
-            const maxStress = (8 * maxLoad * meanDiameter * Kw) / 
-                            (Math.PI * Math.pow(wireDiameter, 3));
-            
-            // 安全系数 (假设许用应力)
-            const allowableStress = material.G * 0.004; // 简化计算
-            const safetyFactor = allowableStress / maxStress;
-            
-            // 其他计算
-            const solidLength = totalCoils * wireDiameter;
-            const workingTravel = freeLength - solidLength;
-            const weight = (Math.PI * Math.pow(wireDiameter/2, 2) * 
-                          Math.PI * meanDiameter * totalCoils * material.density / 1000);
-            const cost = weight * material.cost;
-            
-            // 更新显示
-            updateDisplay({
-                material: material.name,
-                wireDiameter,
-                meanDiameter,
-                freeLength,
-                totalCoils,
-                activeCoils,
-                pitch: pitch.toFixed(2),
-                springIndex: springIndex.toFixed(2),
-                stiffness: stiffness.toFixed(2),
-                maxStress: maxStress.toFixed(1),
-                safetyFactor: safetyFactor.toFixed(2),
-                solidLength: solidLength.toFixed(2),
-                workingTravel: workingTravel.toFixed(2),
-                weight: weight.toFixed(1),
-                cost: cost.toFixed(2)
-            });
-            
-            // 更新图形
-            updateSpringDrawing();
-            
-            // 更新设计状态
-            updateDesignStatus(safetyFactor, springIndex, freeLength/meanDiameter);
+            // Simulate calculation delay
+            setTimeout(() => {
+                // Perform calculations
+                const springIndex = meanDiameter / wireDiameter;
+                const totalCoils = activeCoils + 2; // Assuming 2 inactive coils
+                const pitch = freeLength / (totalCoils - 1);
+                
+                // Spring rate calculation
+                const springRate = (material.G * Math.pow(wireDiameter, 4)) / 
+                                 (8 * Math.pow(meanDiameter, 3) * activeCoils);
+                
+                // Shear stress calculation with Wahl correction factor
+                const C = springIndex;
+                const Kw = (4 * C - 1) / (4 * C - 4) + 0.615 / C;
+                const shearStress = (8 * workingLoad * meanDiameter * Kw) / 
+                                  (Math.PI * Math.pow(wireDiameter, 3));
+                
+                // Safety factor
+                const safetyFactor = material.tau_allow / shearStress;
+                
+                // Other calculations
+                const solidHeight = totalCoils * wireDiameter;
+                const deflection = workingLoad / springRate;
+                const weight = (Math.PI * Math.pow(wireDiameter/2, 2) * 
+                              Math.PI * meanDiameter * totalCoils * material.density / 1000);
+                const cost = weight * material.cost;
+                
+                // Update display with calculated values
+                updateDisplay({
+                    material: material.name,
+                    wireDiameter,
+                    meanDiameter,
+                    freeLength,
+                    activeCoils,
+                    totalCoils,
+                    springIndex: springIndex.toFixed(2),
+                    pitch: pitch.toFixed(2),
+                    springRate: springRate.toFixed(2),
+                    shearStress: shearStress.toFixed(1),
+                    safetyFactor: safetyFactor.toFixed(2),
+                    solidHeight: solidHeight.toFixed(2),
+                    deflection: deflection.toFixed(1),
+                    resonantFrequency: 45.2,
+                    weight: weight.toFixed(1),
+                    cost: cost.toFixed(2)
+                });
+                
+                // Update design status
+                updateDesignStatus(safetyFactor, springIndex, freeLength/meanDiameter);
+                
+                // Restore button state
+                calculateBtn.disabled = false;
+                calculateBtn.textContent = 'Calculate Spring Parameters';
+                progressIndicator.style.display = 'none';
+            }, 1500);
         }
 
         function updateDisplay(params) {
-            // 更新基本参数
+            // Update basic parameters
             const basicParamsHtml = `
                 <div class="parameter-item">
-                    <span class="parameter-label">材料类型：</span>
+                    <span class="parameter-label">Material Type:</span>
                     <span class="parameter-value">${params.material}</span>
                 </div>
                 <div class="parameter-item">
-                    <span class="parameter-label">钢丝直径 (d)：</span>
+                    <span class="parameter-label">Wire Diameter (d):</span>
                     <span class="parameter-value">${params.wireDiameter} mm</span>
                 </div>
                 <div class="parameter-item">
-                    <span class="parameter-label">弹簧中径 (D)：</span>
+                    <span class="parameter-label">Mean Diameter (D):</span>
                     <span class="parameter-value">${params.meanDiameter} mm</span>
                 </div>
                 <div class="parameter-item">
-                    <span class="parameter-label">自由长度 (H₀)：</span>
+                    <span class="parameter-label">Free Length (H₀):</span>
                     <span class="parameter-value">${params.freeLength} mm</span>
                 </div>
                 <div class="parameter-item">
-                    <span class="parameter-label">节距 (t)：</span>
-                    <span class="parameter-value">${params.pitch} mm</span>
-                </div>
-                <div class="parameter-item">
-                    <span class="parameter-label">总圈数：</span>
-                    <span class="parameter-value">${params.totalCoils}</span>
-                </div>
-                <div class="parameter-item">
-                    <span class="parameter-label">有效圈数：</span>
+                    <span class="parameter-label">Active Coils (n):</span>
                     <span class="parameter-value">${params.activeCoils}</span>
                 </div>
                 <div class="parameter-item">
-                    <span class="parameter-label">旋绕比：</span>
+                    <span class="parameter-label">Spring Index (C):</span>
                     <span class="parameter-value">${params.springIndex}</span>
+                </div>
+                <div class="parameter-item">
+                    <span class="parameter-label">Pitch (t):</span>
+                    <span class="parameter-value">${params.pitch} mm</span>
+                </div>
+                <div class="parameter-item">
+                    <span class="parameter-label">Total Coils:</span>
+                    <span class="parameter-value">${params.totalCoils}</span>
                 </div>
             `;
             document.getElementById('basicParams').innerHTML = basicParamsHtml;
             
-            // 更新性能参数
+            // Update performance parameters
+            const safetyFactorColor = params.safetyFactor > 1.5 ? 'var(--success)' : 
+                                     params.safetyFactor > 1.0 ? 'var(--warning)' : 'var(--danger)';
+            
             const performanceParamsHtml = `
                 <div class="parameter-item">
-                    <span class="parameter-label">弹簧刚度：</span>
-                    <span class="parameter-value">${params.stiffness} N/mm</span>
+                    <span class="parameter-label">Spring Rate (k):</span>
+                    <span class="parameter-value">${params.springRate} N/mm</span>
                 </div>
                 <div class="parameter-item">
-                    <span class="parameter-label">最大剪切应力：</span>
-                    <span class="parameter-value">${params.maxStress} MPa</span>
+                    <span class="parameter-label">Shear Stress (τ):</span>
+                    <span class="parameter-value">${params.shearStress} MPa</span>
                 </div>
                 <div class="parameter-item">
-                    <span class="parameter-label">安全系数：</span>
-                    <span class="parameter-value" style="color: ${params.safetyFactor > 1.5 ? '#27ae60' : '#e74c3c'};">${params.safetyFactor}</span>
+                    <span class="parameter-label">Safety Factor (S.F.):</span>
+                    <span class="parameter-value" style="color: ${safetyFactorColor};">${params.safetyFactor}</span>
                 </div>
                 <div class="parameter-item">
-                    <span class="parameter-label">压并长度：</span>
-                    <span class="parameter-value">${params.solidLength} mm</span>
+                    <span class="parameter-label">Solid Height:</span>
+                    <span class="parameter-value">${params.solidHeight} mm</span>
                 </div>
                 <div class="parameter-item">
-                    <span class="parameter-label">工作行程：</span>
-                    <span class="parameter-value">${params.workingTravel} mm</span>
+                    <span class="parameter-label">Deflection:</span>
+                    <span class="parameter-value">${params.deflection} mm</span>
                 </div>
                 <div class="parameter-item">
-                    <span class="parameter-label">共振频率：</span>
-                    <span class="parameter-value">${(45.2).toFixed(1)} Hz</span>
+                    <span class="parameter-label">Resonant Frequency:</span>
+                    <span class="parameter-value">${params.resonantFrequency} Hz</span>
                 </div>
                 <div class="parameter-item">
-                    <span class="parameter-label">重量估算：</span>
+                    <span class="parameter-label">Weight:</span>
                     <span class="parameter-value">${params.weight} g</span>
                 </div>
                 <div class="parameter-item">
-                    <span class="parameter-label">成本估算：</span>
-                    <span class="parameter-value">¥${params.cost}</span>
+                    <span class="parameter-label">Cost Estimate:</span>
+                    <span class="parameter-value">$${params.cost}</span>
                 </div>
             `;
             document.getElementById('performanceParams').innerHTML = performanceParamsHtml;
-        }
-
-        function updateSpringDrawing() {
-            const springCoil = document.getElementById('springCoil');
-            const totalCoils = parseFloat(document.getElementById('totalCoils').value) || 12;
-            
-            springCoil.innerHTML = '';
-            
-            for (let i = 0; i < totalCoils; i++) {
-                const coil = document.createElement('div');
-                coil.className = 'coil';
-                coil.style.top = `${(i / (totalCoils - 1)) * 280 + 10}px`;
-                
-                if (i % 2 === 0) {
-                    coil.style.background = 'linear-gradient(90deg, #3498db, #2980b9)';
-                } else {
-                    coil.style.background = 'linear-gradient(90deg, #2980b9, #3498db)';
-                }
-                
-                springCoil.appendChild(coil);
-            }
-            
-            document.getElementById('drawingStatus').textContent = '✔ 实时渲染';
         }
 
         function updateDesignStatus(safetyFactor, springIndex, lengthRatio) {
@@ -630,34 +709,34 @@
             let warnings = [];
             
             if (safetyFactor > 2.0) {
-                statusMessage = '✅ 设计优秀 - 安全系数充足';
+                statusMessage = '✅ Excellent Design - High Safety Margin';
                 statusClass = '';
             } else if (safetyFactor > 1.2) {
-                statusMessage = '✅ 设计合理 - 满足技术要求';
+                statusMessage = '✅ Good Design - Meets Requirements';
                 statusClass = '';
             } else if (safetyFactor > 1.0) {
-                statusMessage = '⚠️ 设计临界 - 安全系数偏低';
+                statusMessage = '⚠️ Marginal Design - Low Safety Factor';
                 statusClass = 'warning';
-                warnings.push('安全系数偏低，建议增加钢丝直径或减少载荷');
+                warnings.push('Safety factor is low. Consider increasing wire diameter or reducing load.');
             } else {
-                statusMessage = '❌ 设计不安全 - 需立即修改';
+                statusMessage = '❌ Unsafe Design - Immediate Revision Required';
                 statusClass = 'error';
-                warnings.push('安全系数不足，存在失效风险！');
+                warnings.push('Safety factor is insufficient! Risk of failure.');
             }
             
             if (springIndex < 4 || springIndex > 16) {
-                warnings.push('旋绕比不在推荐范围(4-16)内');
+                warnings.push('Spring index is outside recommended range (4-16).');
             }
             
             if (lengthRatio > 4) {
-                warnings.push('长径比过大，需要导向装置');
+                warnings.push('Slenderness ratio is high. Guide mechanism recommended.');
             }
             
             designStatus.textContent = statusMessage;
             designStatus.className = `design-status ${statusClass}`;
             
             if (warnings.length > 0) {
-                warningText.textContent = warnings.join('。');
+                warningText.textContent = warnings.join(' ');
                 warningPanel.style.display = 'block';
             } else {
                 warningPanel.style.display = 'none';
