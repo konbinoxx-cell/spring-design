@@ -4,6 +4,8 @@ A comprehensive web-based tool for designing and calculating compression springs
 
 一个功能完整的网页版压缩弹簧设计计算工具，包含技术图纸和实时验证功能。
 
+🔗 **[Live Demo / 在线演示](https://konbinoxx-cell.github.io/compression-spring-designer/)**
+
 ⭐ **Star this repo if you find it useful!** | **如果觉得有用请给个星标！**
 
 ---
